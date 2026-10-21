@@ -357,10 +357,13 @@ button {
   font-optical-sizing: auto;
 }
 
+
 .hero__line {
   display: block;
   overflow: hidden;
-  padding-bottom: 0.08em;
+  /* room for descenders (g, y) — the mask would clip them otherwise */
+  padding-bottom: 0.24em;
+  margin-bottom: -0.16em;
 }
 
 .hero__line > span {

@@ -1,57 +1,26 @@
 import { useEffect, useRef, useState } from 'react'
 import {
   navLinks,
+  quickLinks,
   locationsMenu,
   corpusesGallery,
   corpusesList,
   houses,
   cafes,
-  studentOrgs,
-  paymentDetails,
-  contacts,
+  mentalHealth,
+  grants,
   departments,
+  university,
 } from './data.js'
+import Icon from './Icons.jsx'
+import { Reveal } from './reveal.jsx'
+import StartSection from './StartSection.jsx'
 
-/** Reveals a section once it scrolls into view. Respects prefers-reduced-motion via CSS. */
-function useReveal() {
-  const ref = useRef(null)
-  const [visible, setVisible] = useState(false)
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true)
-          obs.disconnect()
-        }
-      },
-      { threshold: 0.12 },
-    )
-    obs.observe(el)
-    return () => obs.disconnect()
-  }, [])
-  return [ref, visible]
-}
-
-/** Wrapper that applies the reveal animation to any catalogue card. */
-function Reveal({ as: Tag = 'article', className = '', children, ...rest }) {
-  const [ref, visible] = useReveal()
-  return (
-    <Tag ref={ref} className={`${className}${visible ? ' is-visible' : ''}`} {...rest}>
-      {children}
-    </Tag>
-  )
-}
-
-/** Hides an image whose file is missing instead of showing a broken icon. */
-const hideOnError = (e) => {
-  e.currentTarget.style.display = 'none'
-}
+const ext = { target: '_blank', rel: 'noreferrer' }
 
 function Entry({ index, id, title, address, image, children, links }) {
   return (
-    <Reveal id={id} className="entry">
+    <Reveal as="article" id={id} className="entry">
       <div className="entry__tab">
         <span className="entry__index">{index}</span>
       </div>
@@ -68,7 +37,7 @@ function Entry({ index, id, title, address, image, children, links }) {
           {links && links.length > 0 && (
             <div className="entry__links">
               {links.map((l) => (
-                <a key={l.href} href={l.href} target="_blank" rel="noreferrer">
+                <a key={l.href} href={l.href} {...ext}>
                   {l.label} <span aria-hidden="true">→</span>
                 </a>
               ))}
@@ -80,73 +49,147 @@ function Entry({ index, id, title, address, image, children, links }) {
   )
 }
 
-function PaymentModal({ open, onClose }) {
-  if (!open) return null
+/** Subtle parallax for the hero collage. Disabled for reduced motion. */
+function useParallax() {
+  const ref = useRef(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    let raf = 0
+    const onScroll = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        const y = Math.min(window.scrollY, 900)
+        el.style.setProperty('--py', `${y}`)
+      })
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      cancelAnimationFrame(raf)
+    }
+  }, [])
+  return ref
+}
+
+function Hero() {
+  const collage = useParallax()
   return (
-    <div className="modal-overlay" role="dialog" aria-modal="true" aria-label="Реквізити для оплати">
-      <div className="modal">
-        <button className="modal__close" onClick={onClose} aria-label="Закрити">
-          ×
-        </button>
-        <img className="modal__image" src="/img/stg.jpg" alt="" onError={hideOnError} />
-        <div className="modal__info">
-          <h2>{paymentDetails.title}</h2>
-          {paymentDetails.lines.map((line) => (
-            <p key={line}>{line}</p>
-          ))}
+    <section className="hero">
+      <div className="hero__copy">
+        <div className="hero__eyebrow">
+          <span className="hero__pulse" aria-hidden="true" />
+          Довідник студента · ІФНМУ
+        </div>
+        <h1 className="hero__title">
+          <span className="hero__line">
+            <span>Student</span>
+          </span>
+          <span className="hero__line">
+            <span>
+              <em>guide</em>
+            </span>
+          </span>
+        </h1>
+        <p className="hero__text">
+          Практичний путівник для першокурсників Івано-Франківського національного медичного університету та
+          Фахового медичного коледжу, а також для всіх студентів, які хочуть краще орієнтуватися в
+          університетському житті, користуватися цифровими сервісами й відкривати для себе нові можливості для
+          навчання, розвитку та самореалізації.
+        </p>
+        <div className="hero__actions">
+          <a className="btn btn--primary" href="#start">
+            Мій старт в ІФНМУ <Icon name="arrow" size={18} />
+          </a>
+          <a className="btn btn--ghost" href="#locations">
+            Локації університету
+          </a>
         </div>
       </div>
-    </div>
+
+      <div className="hero__visual" ref={collage} aria-hidden="true">
+        <figure className="ph ph--a">
+          <img src="/img/corpuse1.jpg" alt="" />
+        </figure>
+        <figure className="ph ph--b">
+          <img src="/img/library2.jpg" alt="" />
+        </figure>
+        <figure className="ph ph--c">
+          <img src="/img/corpuse2.jpg" alt="" />
+        </figure>
+        <div className="stamp">
+          <svg viewBox="0 0 120 120">
+            <defs>
+              <path id="stampCircle" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0" />
+            </defs>
+            <text>
+              <textPath href="#stampCircle" textLength="286" lengthAdjust="spacing">STUDENT GUIDE · ІФНМУ · З 1945 · </textPath>
+            </text>
+          </svg>
+          <img src="/img/ifnmu-mark.svg" alt="" />
+        </div>
+      </div>
+
+      <nav className="quick" aria-label="Швидкий доступ">
+        {quickLinks.map((q, i) => (
+          <a key={q.href} href={q.href} {...ext} className="quick__item" style={{ '--i': i }}>
+            <span className="quick__icon">
+              <Icon name={q.icon} size={22} />
+            </span>
+            <span className="quick__text">
+              <strong>{q.label}</strong>
+              <small>{q.hint}</small>
+            </span>
+            <Icon name="external" size={15} className="quick__ext" />
+          </a>
+        ))}
+      </nav>
+    </section>
   )
 }
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [modalOpen, setModalOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [showAllCorpuses, setShowAllCorpuses] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12)
-    window.addEventListener('scroll', onScroll)
+    window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   const visibleCorpuses = showAllCorpuses ? corpusesList : corpusesList.slice(0, 6)
+  const year = new Date().getFullYear()
 
   return (
     <div className="page">
-      <PaymentModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      <a className="skip" href="#main">
+        Перейти до змісту
+      </a>
 
       <header className={`header${scrolled ? ' header--scrolled' : ''}`}>
-        <a className="logo" href="#top">
-          <img src="/img/logo.jpg" alt="ІФНМУ" />
-          <span>Student Guide</span>
+        <a className="logo" href="#top" aria-label="Student Guide ІФНМУ — на початок">
+          <img src="/img/ifnmu-mark.svg" alt="" width="26" height="33" />
+          <span className="logo__text">
+            <span>Student Guide</span>
+            <small>ІФНМУ</small>
+          </span>
         </a>
 
-        <nav className={`nav${menuOpen ? ' nav--open' : ''}`}>
-          {navLinks.map((link) =>
-            link.id === 'mssg' ? (
-              <button
-                key={link.label}
-                className="nav__link nav__link--button"
-                onClick={() => {
-                  setModalOpen(true)
-                  setMenuOpen(false)
-                }}
-              >
-                {link.label}
-              </button>
-            ) : (
-              <a key={link.label} className="nav__link" href={link.href} target="_blank" rel="noreferrer">
-                {link.label}
-              </a>
-            ),
-          )}
+        <nav className={`nav${menuOpen ? ' nav--open' : ''}`} aria-label="Головне меню">
+          {navLinks.map((link) => (
+            <a key={link.label} className="nav__link" href={link.href} {...ext} onClick={() => setMenuOpen(false)}>
+              {link.label}
+            </a>
+          ))}
+          <a className="nav__cta" href="#start" onClick={() => setMenuOpen(false)}>
+            Мій старт
+          </a>
         </nav>
 
         <button
-          className="burger"
+          className={`burger${menuOpen ? ' burger--open' : ''}`}
           aria-label="Меню"
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((v) => !v)}
@@ -158,28 +201,14 @@ export default function App() {
       </header>
 
       <main id="top">
-        <section className="hero">
-          <div className="hero__eyebrow">Довідник студента · ІФНМУ</div>
-          <h1 className="hero__title">Student guide</h1>
-          <p className="hero__text">
-            Довідник, який стане у пригоді першокурсникам фахового медичного коледжу чи Університету —
-            а також усім, хто вже навчається, але хоче знати більше про сервіси й можливості
-            університетського життя.
-          </p>
-        </section>
+        <span id="main" />
+        <Hero />
 
-        <div className="banner">
-          <p>
-            Деталі про вартість, правила поселення і проживання в гуртожитках — на офіційній сторінці{' '}
-            <a href="https://www.ifnmu.edu.ua/home/public-information/student-trade-union/" target="_blank" rel="noreferrer">
-              студентського профспілкового комітету
-            </a>
-            .
-          </p>
-        </div>
-
-        <section className="index-section">
-          <h2 className="index-section__title">Локації університету</h2>
+        <section className="index-section" id="locations">
+          <div className="section-head">
+            <span className="section-head__kicker">Мапа</span>
+            <h2 className="index-section__title">Локації університету</h2>
+          </div>
           <div className="index-tabs">
             {locationsMenu.map((item, i) => (
               <a key={item.href} className="index-tab" href={item.href}>
@@ -199,6 +228,7 @@ export default function App() {
             image="/img/library2.jpg"
             links={[
               { label: 'Сайт бібліотеки', href: 'https://www.ifnmu.edu.ua/home/library/' },
+              { label: 'Електронна бібліотека', href: 'https://dspace.ifnmu.edu.ua/home' },
               { label: 'GoogleMaps', href: 'https://goo.gl/maps/uwMHrBaqrHfiskuP6' },
             ]}
           />
@@ -221,13 +251,13 @@ export default function App() {
             links={[{ label: 'GoogleMaps', href: 'https://goo.gl/maps/UMmuVKSz8ZWVjN7V7' }]}
           >
             <p className="entry__note">
-              Висококваліфіковані лікарі й сучасне обладнання — для вашого здоров'я. Студент, який
-              захворів, для відпрацювання пропущених занять повинен мати медичну довідку встановленої
-              форми, видану або завірену Університетською клінікою.
+              Висококваліфіковані лікарі й сучасне обладнання — для вашого здоров'я. Студент, який захворів, для
+              відпрацювання пропущених занять повинен мати медичну довідку встановленої форми, видану або завірену
+              Університетською клінікою.
             </p>
           </Entry>
 
-          <Reveal id="houses" className="entry entry--group">
+          <Reveal as="article" id="houses" className="entry entry--group">
             <div className="entry__tab">
               <span className="entry__index">04</span>
             </div>
@@ -241,17 +271,27 @@ export default function App() {
                   {houses.map((h) => (
                     <li key={h.href}>
                       <span>{h.label}</span>
-                      <a href={h.href} target="_blank" rel="noreferrer">
+                      <a href={h.href} {...ext}>
                         GoogleMaps →
                       </a>
                     </li>
                   ))}
                 </ul>
+                <p className="entry__callout">
+                  <Icon name="doc" size={18} />
+                  <span>
+                    Деталі про вартість, правила поселення і проживання в гуртожитках — на офіційній сторінці{' '}
+                    <a href="https://www.ifnmu.edu.ua/home/public-information/student-trade-union/" {...ext}>
+                      студентського профспілкового комітету
+                    </a>
+                    .
+                  </span>
+                </p>
               </div>
             </div>
           </Reveal>
 
-          <Reveal id="corpuses" className="entry entry--wide">
+          <Reveal as="article" id="corpuses" className="entry entry--wide">
             <div className="entry__tab">
               <span className="entry__index">05</span>
             </div>
@@ -273,13 +313,10 @@ export default function App() {
               </div>
               <ul className="corpuses-list">
                 {visibleCorpuses.map((c) => (
-                  <li key={c.href} className="corpuses-list__item">
-                    <svg className="corpuses-list__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                      <path d="M12 3L2 8l10 5 8-4.09V15h2V8L12 3z" fill="currentColor" />
-                      <path d="M6 10.5V15c0 1.5 2.5 3.5 6 3.5s6-2 6-3.5v-4.5l-6 3-6-3z" fill="currentColor" opacity="0.55" />
-                    </svg>
+                  <li key={c.href + c.label} className="corpuses-list__item">
+                    <Icon name="moodle" size={30} className="corpuses-list__icon" />
                     <span className="corpuses-list__label">{c.label}</span>
-                    <a className="corpuses-list__btn" href={c.href} target="_blank" rel="noreferrer">
+                    <a className="corpuses-list__btn" href={c.href} {...ext}>
                       Дивитися на GoogleMaps
                     </a>
                   </li>
@@ -293,32 +330,32 @@ export default function App() {
             </div>
           </Reveal>
 
-          <Reveal id="cafes" className="entry entry--wide">
+          <Reveal as="article" id="cafes" className="entry entry--wide">
             <div className="entry__tab">
               <span className="entry__index">06</span>
             </div>
             <div className="entry__body entry__body--wide">
               <h3 className="entry__title">Студентські їдальні</h3>
               <p className="entry__note">
-                Студентське життя дуже насичене: окрім навчання — спорт, вечори, майстер-класи, гуртки,
-                театри, кіно, спілкування. Мережа студентських закладів харчування ІФНМУ — до ваших
-                послуг.
+                Студентське життя дуже насичене: окрім навчання — спорт, вечори, майстер-класи, гуртки, театри,
+                кіно, спілкування. Мережа студентських закладів харчування ІФНМУ — до ваших послуг.
               </p>
-              <div className="cafes-gallery">
-                <img src="/img/cafe2.jpg" alt="" loading="lazy" onError={hideOnError} />
-                <img src="/img/cafe3.jpg" alt="" loading="lazy" onError={hideOnError} />
-                <img className="cafes-gallery__wide" src="/img/cafe1.jpg" alt="" loading="lazy" onError={hideOnError} />
-              </div>
-              <ul className="cafes-list">
-                {cafes.map((c) => (
-                  <li key={c.href}>
-                    <span>{c.label}</span>
-                    <a href={c.href} target="_blank" rel="noreferrer">
-                      GoogleMaps →
-                    </a>
-                  </li>
+              <div className="cafes">
+                {cafes.map((c, i) => (
+                  <a key={c.href} className={`cafe cafe--${i + 1}`} href={c.href} {...ext}>
+                    <span className="cafe__art" aria-hidden="true">
+                      <Icon name={c.icon} size={44} strokeWidth={1.3} />
+                    </span>
+                    <span className="cafe__body">
+                      <strong>{c.name}</strong>
+                      <span className="cafe__addr">{c.address}</span>
+                      <span className="cafe__go">
+                        Маршрут <Icon name="arrow" size={15} />
+                      </span>
+                    </span>
+                  </a>
                 ))}
-              </ul>
+              </div>
             </div>
           </Reveal>
 
@@ -336,113 +373,131 @@ export default function App() {
           />
         </div>
 
-        <section className="callout callout--mental">
-          <img src="/img/mental_health.jpg" alt="" loading="lazy" />
-          <div className="callout__info">
+        <Reveal as="section" className="mh rv" id="mental" aria-label="Центр ментального здоров'я">
+          <div className="mh__art">
+            <img src="/img/mental_health.jpg" alt="Центр ментального здоров'я ІФНМУ — «Подбай про себе!»" loading="lazy" />
+          </div>
+          <div className="mh__body">
+            <span className="mh__eyebrow">Центр ментального здоров'я · ЗМІСТИ</span>
+            <h2 className="mh__title">Подбай про себе</h2>
             <p>
-              Відчуваєте втому, стрес або потребуєте підтримки? Центр ментального здоров'я ІФНМУ завжди
-              поруч, щоб вислухати, підтримати й допомогти. Звертайтеся — разом ми знайдемо рішення!
+              Відчуваєте втому, стрес або потребуєте підтримки? Центр ментального здоров'я ІФНМУ завжди поруч, щоб
+              вислухати, підтримати й допомогти. Звертайтеся — разом ми знайдемо рішення!
             </p>
-            <a href="https://www.ifnmu.edu.ua/center-for-mental-health-ifnmu/" target="_blank" rel="noreferrer">
-              Записатися на консультацію →
+            <a className="btn btn--sage" href={mentalHealth.href} {...ext}>
+              Записатися на консультацію <Icon name="arrow" size={18} />
             </a>
-          </div>
-        </section>
-
-        <section className="callout callout--grants">
-          <div className="callout__info">
-            <p>
-              Ділимося цікавими можливостями від партнерів! Для студентів, викладачів, науковців та всіх
-              активних людей нашої Університетської родини.
-            </p>
-            <a href="https://en.wst.com.pl/education_offer/computer_science" target="_blank" rel="noreferrer">
-              Більше →
-            </a>
-          </div>
-          <img src="/img/grants.jpg" alt="" loading="lazy" onError={hideOnError} />
-        </section>
-
-        <section id="student_org" className="orgs">
-          <h2 className="index-section__title">Студентські організації</h2>
-          <p className="orgs__intro">
-            Шукаєш можливостей для особистого розвитку, лідерства та незабутніх спогадів? Приєднуйся до
-            студентських організацій Університету — нові друзі, проєкти, події та вплив на життя
-            університетської спільноти.
-          </p>
-          <div className="orgs__grid">
-            {studentOrgs.map((org) => (
-              <div className="org-card" key={org.name}>
-                <h4>{org.name}</h4>
-                <div className="org-card__links">
-                  {org.links.map((l) => (
-                    <a key={l.href} href={l.href} target="_blank" rel="noreferrer">
-                      {l.label}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="umsa">
-            <div className="umsa__info">
-              <h4>Громадська організація «Українська медична студентська асоціація» (УМСА)</h4>
-              <p>Частина Міжнародної федерації асоціацій студентів-медиків (IFMSA). Запрошуємо тебе стати частинкою нашої сім'ї!</p>
-              <div className="org-card__links">
-                <a href="https://web.telegram.org/k/#@umsa_if" target="_blank" rel="noreferrer">
-                  Telegram
-                </a>
-                <a href="https://www.instagram.com/umsa.frankivsk/" target="_blank" rel="noreferrer">
-                  Instagram
-                </a>
-              </div>
+            <div className="mh__meta">
+              <span>
+                <Icon name="pin" size={16} /> {mentalHealth.address}
+              </span>
+              <a href={`tel:${mentalHealth.phone.replace(/[^\d+]/g, '')}`}>
+                <Icon name="phone" size={16} /> {mentalHealth.phone}
+              </a>
             </div>
           </div>
-        </section>
+        </Reveal>
 
-        <section className="contacts-section">
-          <h2 className="index-section__title">Контакти</h2>
+        <Reveal as="section" className="grants rv" aria-label="Гранти і проєкти">
+          <div className="grants__body">
+            <span className="grants__eyebrow">Гранти і проєкти</span>
+            <h2 className="grants__title">Можливості від партнерів</h2>
+            <p>
+              Ділимося цікавими можливостями від партнерів! Для студентів, викладачів, науковців та всіх активних
+              людей нашої Університетської родини.
+            </p>
+            <a className="btn btn--light" href={grants.href} {...ext}>
+              {grants.label} <Icon name="arrow" size={18} />
+            </a>
+          </div>
+          <div className="grants__art" aria-hidden="true">
+            {['Гранти', 'Стажування', 'Обмін', 'Конференції', 'Стипендії', 'Проєкти'].map((t, i) => (
+              <span key={t} className={`chip chip--${i + 1}`}>
+                {t}
+              </span>
+            ))}
+          </div>
+        </Reveal>
+
+        <section className="contacts-section" id="contacts">
+          <div className="section-head">
+            <span className="section-head__kicker">Деканати</span>
+            <h2 className="index-section__title">Контакти</h2>
+          </div>
           <div className="contacts-grid">
             {departments.map((dep) => (
-              <div className="dept-card" key={dep.name}>
+              <Reveal className="dept-card rv" key={dep.name}>
                 <h4>{dep.name}</h4>
                 <p className="dept-card__row">
-                  <span aria-hidden="true">⚲</span> {dep.address}
+                  <Icon name="pin" size={16} /> {dep.address}
                 </p>
                 {dep.phones.map((phone) => (
                   <p className="dept-card__row" key={phone}>
-                    <span aria-hidden="true">☎</span>{' '}
-                    <a href={`tel:${phone.replace(/[^\d+]/g, '')}`}>{phone}</a>
+                    <Icon name="phone" size={16} /> <a href={`tel:${phone.replace(/[^\d+]/g, '')}`}>{phone}</a>
                   </p>
                 ))}
                 <p className="dept-card__row">
-                  <span aria-hidden="true">✉</span>{' '}
-                  <a href={`mailto:${dep.email}`}>{dep.email}</a>
+                  <Icon name="mail" size={16} /> <a href={`mailto:${dep.email}`}>{dep.email}</a>
                 </p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </section>
+
+        <StartSection />
       </main>
 
       <footer className="footer">
-        <div className="footer__info">
-          <p>
-            <span aria-hidden="true">✉</span> {contacts.email}
-          </p>
-          <p>
-            <span aria-hidden="true">☎</span> {contacts.phone}
-          </p>
-          <p>
-            <span aria-hidden="true">⚲</span> {contacts.address}
-          </p>
+        <div className="footer__grid">
+          <div className="footer__brand">
+            <img src="/img/ifnmu-mark.svg" alt="" width="40" height="51" />
+            <p>{university.name}</p>
+          </div>
+          <div className="footer__col">
+            <h4>Контакти</h4>
+            <p>
+              <Icon name="pin" size={16} /> {university.address}
+            </p>
+            <p>
+              <Icon name="phone" size={16} />{' '}
+              <a href={`tel:+38${university.phone.replace(/[^\d]/g, '')}`}>{university.phone}</a>
+            </p>
+            <p>
+              <Icon name="globe" size={16} />{' '}
+              <a href={university.site} {...ext}>
+                ifnmu.edu.ua
+              </a>
+            </p>
+          </div>
+          <div className="footer__col">
+            <h4>Корисне</h4>
+            <ul>
+              {university.links.map((l) => (
+                <li key={l.href}>
+                  <a href={l.href} {...ext}>
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="footer__col">
+            <h4>Ми в мережі</h4>
+            <ul>
+              {university.socials.map((s) => (
+                <li key={s.href}>
+                  <a href={s.href} {...ext}>
+                    {s.label}
+                    {s.note && <small> · {s.note}</small>}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-        <div className="footer__nav">
-          {contacts.socials.map((s) => (
-            <a key={s.label} href={s.href} target="_blank" rel="noreferrer">
-              {s.label}
-            </a>
-          ))}
+        <div className="footer__bottom">
+          <span>© {year} ІФНМУ · Student Guide</span>
+          <a href="#top">Нагору ↑</a>
         </div>
       </footer>
     </div>

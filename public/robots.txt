@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://studentguide.ifnmu.edu.ua/sitemap.xml

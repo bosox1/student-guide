@@ -1,28 +1,34 @@
 export const navLinks = [
   { label: 'ІФНМУ', href: 'https://www.ifnmu.edu.ua/' },
-  { label: 'Education hub', href: '../index.html' },
   { label: 'Коледж ІФНМУ', href: 'https://www.ifnmu.edu.ua/professional-medical-college-ifnmu-2/' },
-  { label: 'Оголошення', id: 'mssg' },
   { label: 'Розклад занять', href: 'https://www.ifnmu.edu.ua/class-schedule/' },
   {
     label: 'Реквізити для оплати',
     href: 'https://www.ifnmu.edu.ua/wp-content/uploads/2025/03/%D0%A0%D0%B5%D0%BA%D0%B2%D1%96%D0%B7%D0%B8%D1%82%D0%B8-%D0%86%D0%A4%D0%9D%D0%9C%D0%A3.pdf',
   },
   {
-    label: 'Розмір плати за навчання',
+    label: 'Плата за навчання',
     href: 'https://www.ifnmu.edu.ua/home/public-information/amount-of-fees-for-education-training-retraining-qualification-improvement-of-education-seekers/',
   },
 ]
 
+/** Швидкий доступ у hero — найчастіші сервіси. */
+export const quickLinks = [
+  { label: 'Розклад', hint: 'двотижневий цикл', icon: 'calendar', href: 'https://www.ifnmu.edu.ua/class-schedule/' },
+  { label: 'Moodle', hint: 'курси й матеріали', icon: 'moodle', href: 'https://moodle.ifnmu.edu.ua/' },
+  { label: 'Пошта й Teams', hint: 'інструкція, PDF', icon: 'mail', href: 'https://www.ifnmu.edu.ua/wp-content/uploads/2024/08/instrukciya_dlia_studentiv_1kurs-new-.pdf' },
+  { label: 'Е-бібліотека', hint: 'DSpace ІФНМУ', icon: 'book', href: 'https://dspace.ifnmu.edu.ua/home' },
+]
+
+/** Порядок збігається з порядком карток на сторінці — номери рахуються автоматично. */
 export const locationsMenu = [
   { label: 'Бібліотека', href: '#library' },
   { label: 'Спортивний комплекс', href: '#sport_compleks' },
   { label: 'Клініка', href: '#clinik' },
+  { label: 'Гуртожитки', href: '#houses' },
   { label: 'Корпуси', href: '#corpuses' },
   { label: 'Студентські їдальні', href: '#cafes' },
-  { label: 'Гуртожитки', href: '#houses' },
   { label: 'Музей', href: '#museum' },
-  { label: 'Студентські організації', href: '#student_org' },
 ]
 
 export const corpusesGallery = [
@@ -73,63 +79,21 @@ export const houses = [
 ]
 
 export const cafes = [
-  { label: 'Кафе «Смайл», (вул. Грушевського, 2)', href: 'https://goo.gl/maps/jKkQYDp4Bge7jwYA8' },
-  { label: 'Кафе «Академка», (вул. Низова, 3 б)', href: 'https://goo.gl/maps/jNFXbE9sdZJtKfQj9' },
-  { label: 'Кафе фармацевтичного корпусу, (вул. Галицька, 124 К)', href: 'https://goo.gl/maps/gZL2rGBv5FLTFrbA7' },
+  { name: 'Кафе «Смайл»', address: 'вул. Грушевського, 2', icon: 'cup', href: 'https://goo.gl/maps/jKkQYDp4Bge7jwYA8' },
+  { name: 'Кафе «Академка»', address: 'вул. Низова, 3 б', icon: 'plate', href: 'https://goo.gl/maps/jNFXbE9sdZJtKfQj9' },
+  { name: 'Кафе фармацевтичного корпусу', address: 'вул. Галицька, 124 К', icon: 'bowl', href: 'https://goo.gl/maps/gZL2rGBv5FLTFrbA7' },
 ]
 
-export const studentOrgs = [
-  { name: 'Студентський профком ІФНМУ', links: [{ label: 'Детальніше', href: 'https://www.ifnmu.edu.ua/home/public-information/student-trade-union/' }] },
-  {
-    name: 'Студентський парламент ІФНМУ',
-    links: [
-      { label: 'Детальніше', href: 'https://uadd.me/ifnmu_parlament' },
-      { label: 'Instagram', href: 'https://www.instagram.com/ifnmu_live/' },
-    ],
-  },
-  {
-    name: 'Студентська Рада Коледжу',
-    links: [{ label: 'Instagram', href: 'https://www.instagram.com/stud.rada.med.college_ifnmu?igsh=b292NTJ0cnBsd2Fq' }],
-  },
-  {
-    name: 'Студентське наукове товариство',
-    links: [{ label: 'Детальніше', href: 'https://www.instagram.com/sss_ifnmu?igsh=MTc0N2VxeXVuc2Nicg==' }],
-  },
-  {
-    name: 'Speaking Club Renovation',
-    links: [{ label: 'Детальніше', href: 'https://www.instagram.com/speaking.club.renovation?igshid=MzRlODBiNWFlZA%3D%3D' }],
-  },
-  {
-    name: 'Асоціація Студентів Стоматологів (АСС ІФО)',
-    links: [{ label: 'Детальніше', href: 'https://www.instagram.com/acc_ifo' }],
-  },
-  {
-    name: 'Просвіта ІФНМУ',
-    links: [{ label: 'Детальніше', href: 'https://www.instagram.com/prosvita.ifnmu?igsh=MTd4OWE5dGdhY2ZiNQ==' }],
-  },
-]
-
-export const paymentDetails = {
-  title: 'Івано-Франківський національний медичний університет',
-  lines: [
-    'Код ЄДРПОУ 02010758',
-    'Банк ДКСУ м. Київ,',
-    'МФО 820172, р/р UA 488201720313291005201004289',
-    'Свідоцтво 100202196, под. номер 020107509155.',
-    'Призн.платежу: за навчання ПІП, факультет, курс',
-  ],
+export const mentalHealth = {
+  href: 'https://zmisty.ifnmu.edu.ua/',
+  address: 'вул. Короля Данила, 15',
+  phone: '+38 067 814 70 77',
 }
 
-export const contacts = {
-  email: 'college@ifnmu.edu.ua',
-  phone: '+38-0342-53-02-03',
-  address: 'м. Івано-Франківськ, вул. Галицька, 2.',
-  socials: [
-    { label: 'Instagram', href: 'https://www.instagram.com/collegeifnmu/' },
-    { label: 'Facebook', href: 'https://www.facebook.com/collegeifnmu/' },
-    { label: 'Telegram', href: 'https://t.me/collegeifnmu' },
-    { label: 'YouTube', href: 'https://youtu.be/2pyi5pXK-Pw' },
-  ],
+/** TODO: підставити посилання на канал «Гранти і проєкти», коли буде. */
+export const grants = {
+  href: 'https://en.wst.com.pl/education_offer/computer_science',
+  label: 'Перейти до можливостей',
 }
 
 export const departments = [
@@ -170,3 +134,28 @@ export const departments = [
     email: 'fpo@ifnmu.edu.ua',
   },
 ]
+
+/* ---------- Футер: університетські контакти ---------- */
+
+export const university = {
+  name: 'Івано-Франківський національний медичний університет',
+  address: 'вул. Галицька, 2, м. Івано-Франківськ, 76018',
+  // TODO: звірити з офіційним сайтом (взято з education.ua)
+  phone: '(0342) 53-32-95',
+  site: 'https://www.ifnmu.edu.ua/',
+  links: [
+    { label: 'Сайт ІФНМУ', href: 'https://www.ifnmu.edu.ua/' },
+    { label: 'Коледж ІФНМУ', href: 'https://www.ifnmu.edu.ua/professional-medical-college-ifnmu-2/' },
+    { label: 'Розклад занять', href: 'https://www.ifnmu.edu.ua/class-schedule/' },
+    { label: 'Moodle', href: 'https://moodle.ifnmu.edu.ua/' },
+    { label: 'Електронна бібліотека', href: 'https://dspace.ifnmu.edu.ua/home' },
+    { label: 'Центр ментального здоров’я', href: 'https://zmisty.ifnmu.edu.ua/' },
+  ],
+  socials: [
+    { label: 'Instagram', href: 'https://instagram.com/ifnmu_official' },
+    { label: 'Facebook', href: 'https://facebook.com/ifnmu.edu.ua' },
+    { label: 'Telegram', note: 'IFNMU Pulse', href: 'https://t.me/ifnmu2023' },
+    { label: 'YouTube', href: 'https://youtube.com/@ifnmu' },
+    { label: 'X', href: 'https://x.com/ifnmu_official' },
+  ],
+}

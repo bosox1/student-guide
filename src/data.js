@@ -16,7 +16,7 @@ export const navLinks = [
 export const quickLinks = [
   { label: 'Розклад', hint: 'двотижневий цикл', icon: 'calendar', href: 'https://www.ifnmu.edu.ua/class-schedule/' },
   { label: 'Moodle', hint: 'курси й матеріали', icon: 'moodle', href: 'https://moodle.ifnmu.edu.ua/' },
-  { label: 'Пошта й Teams', hint: 'інструкція, PDF', icon: 'mail', href: 'https://www.ifnmu.edu.ua/wp-content/uploads/2024/08/instrukciya_dlia_studentiv_1kurs-new-.pdf' },
+  { label: 'Пошта й Teams', hint: 'інструкція, PDF', icon: 'mail', href: 'https://www.ifnmu.edu.ua/wp-content/uploads/2026/10/Instruktsiia_Microsoft365_IFNMU.pdf' },
   { label: 'Е-бібліотека', hint: 'DSpace ІФНМУ', icon: 'book', href: 'https://dspace.ifnmu.edu.ua/home' },
 ]
 
